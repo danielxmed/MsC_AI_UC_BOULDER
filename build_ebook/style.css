@@ -278,6 +278,30 @@ nav#toc li {
   break-after: page;
 }
 
+/* ---------- Post-refactor readability tweaks ---------- */
+pre code {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 0.85em;
+}
+
+p + pre { margin-top: 0.4em; }
+
+figure img { max-width: 100%; height: auto; }
+
+/* Equalize inline math with body text so fractions don't overwhelm lines */
+math, .math { font-size: 1em; }
+
+/* Stricter orphan/widow control for nicer page breaks in rigid readers */
+p { orphans: 3; widows: 3; }
+
+/* Block-level display math should have room to breathe */
+math[display="block"], .math.display {
+  display: block;
+  margin: 0.9em 0;
+  text-align: center;
+}
+
 /* ---------- Dark-mode hint (readers that honor it) ---------- */
 @media (prefers-color-scheme: dark) {
   body { background: #1a1a1a; color: #e5e5e5; }

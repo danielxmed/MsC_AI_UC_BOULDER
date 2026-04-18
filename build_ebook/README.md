@@ -8,22 +8,24 @@ em `deep_learning_modulo_2_leitura_base/`.
 
 ```
 build_ebook/
-├── extract_pdf.py           # extrai texto e imagens do PDF-base via pymupdf4llm
-├── postprocess_chapters.py  # limpa headings, paths de imagem, fooder do PDF
+├── fetch_d2l_chapters.py    # fetcha HTML de d2l.ai e converte para markdown limpo
 ├── split_updates.py         # fatia o markdown de atualizações por seção
 ├── assemble.py              # concatena tudo num ebook.md unificado
-├── build.sh                 # pandoc → EPUB3 final
-├── verify.py                # checagens de integridade pós-build
 ├── make_cover.py            # gera cover.png via Pillow
+├── build.sh                 # orquestra tudo + pandoc → EPUB3 final
+├── post_pandoc_epub.py      # pós-processa: renomeia .svgz → .svg
+├── verify.py                # checagens de integridade pós-build
 ├── cover.png                # (gerada)
 ├── style.css                # CSS de leitura
 ├── metadata.yaml            # metadados EPUB (título, autor, idioma)
 ├── papers/                  # deep-dives dos 10 papers (committed)
-├── base_chapters/           # (.gitignored — gerado por extract_pdf.py)
-├── updates/                 # (.gitignored — gerado por split_updates.py)
-├── extracted_images/        # (.gitignored — gerado por extract_pdf.py)
+├── d2l_cache/               # HTML-fonte cacheado (committed p/ reruns offline)
+├── extract_pdf.py           # [DEPRECATED] pipeline antigo via PDF
+├── postprocess_chapters.py  # [DEPRECATED] pareado com o acima
+├── base_chapters/           # (.gitignored — gerado por fetch_d2l_chapters.py)
+├── d2l_assets/              # (.gitignored — imagens SVG baixadas de d2l.ai)
 ├── assets/                  # (.gitignored — mescla de imagens)
-├── raw_pages.json           # (.gitignored — debug)
+├── updates/                 # (.gitignored — gerado por split_updates.py)
 └── ebook.md                 # (.gitignored — markdown unificado intermediário)
 ```
 
@@ -31,36 +33,54 @@ build_ebook/
 
 ```bash
 # Dependências
-apt-get install -y poppler-utils pandoc
-pip install pymupdf pymupdf4llm ebooklib Pillow beautifulsoup4 lxml requests \
-            markdown-it-py mdit-py-plugins
+apt-get install -y pandoc poppler-utils
+pip install Pillow beautifulsoup4 lxml requests
 
-# Pipeline
-python3 build_ebook/extract_pdf.py
-python3 build_ebook/postprocess_chapters.py
-python3 build_ebook/split_updates.py
-python3 build_ebook/make_cover.py
-python3 build_ebook/assemble.py
-bash    build_ebook/build.sh
+# Pipeline (tudo orquestrado pelo build.sh)
+bash build_ebook/build.sh
 python3 build_ebook/verify.py
+```
+
+Os passos individuais que `build.sh` executa são:
+
+```bash
+python3 build_ebook/fetch_d2l_chapters.py   # HTML d2l.ai → base_chapters/*.md
+python3 build_ebook/split_updates.py        # updates markdown → updates/*.md
+python3 build_ebook/make_cover.py           # cover.png (se ainda não existe)
+python3 build_ebook/assemble.py             # concat → ebook.md
+pandoc ... ebook.md -o deep_learning_modulo_2_ebook.epub
+python3 build_ebook/post_pandoc_epub.py     # .svgz → .svg p/ compat Apple Books
 ```
 
 O resultado é `deep_learning_modulo_2_ebook.epub` na raiz do repositório.
 
 ## Design
 
-- **Extração PDF**: `pymupdf4llm` gera markdown preservando matemática em LaTeX
-  e imagens. 53 páginas → 7 capítulos (§3.7, §5.5, §5.6, §12.4/5, §12.6, §12.10,
-  §12.11) + 1 capítulo de fragmentos residuais do PDF (trechos de §5.4 e §12.9
-  que "vazaram" entre seções, preservados por completude).
+- **Texto-base**: `fetch_d2l_chapters.py` baixa o HTML oficial de d2l.ai
+  (CC BY-SA 4.0) para as seções §3.7, §5.5, §5.6, §12.4, §12.5, §12.6, §12.10
+  e §12.11, preserva o canal PyTorch dos tabs de código, converte a matemática
+  MathJax (`\(...\)` / `\[...\]`) para LaTeX nativo (`$...$` / `$$...$$`), e
+  delega a pandoc a serialização para markdown. HTML fica cacheado em
+  `d2l_cache/` para builds offline reprodutíveis.
 - **Atualizações**: fatiadas do markdown-fonte por expressão regular conforme a
   numeração de seção nele.
 - **Papers**: resumos substanciais (~700w cada) escritos em português por mim
   a partir de fetches do arXiv HTML via WebFetch.
 - **EPUB**: pandoc com `epub3`, MathML para equações, CSS custom, capa embutida.
-- **Validação**: 8 checagens automáticas em `verify.py`, incluindo contagem de
-  palavras ≥ 1.5× a do PDF-base (garantia de que todo o conteúdo foi preservado
-  e extensões foram agregadas).
+  Pós-processamento renomeia `.svgz` → `.svg` (pandoc sempre rebatiza assets SVG,
+  o que quebra a renderização em alguns leitores).
+- **Validação**: 11 checagens automáticas em `verify.py`, incluindo regressões
+  específicas (matemática corrompida, `__init__` como bold, blocos `<pre>` sem
+  `<code>`, headers de página vazando como parágrafos).
+
+## Nota histórica
+
+A primeira versão do pipeline extraía os capítulos-base via `pymupdf4llm`
+contra o PDF (`extract_pdf.py` + `postprocess_chapters.py`, hoje marcados como
+DEPRECATED). Isso gerou EPUBs mal-formatados: equações como `∥w∥[2]`, código
+Python como prosa, `__init__` renderizado como `**init**`. A migração para
+HTML-de-d2l.ai eliminou todos esses artefatos — math e código agora chegam
+intactos ao EPUB final.
 
 ## Garantias de integridade
 
