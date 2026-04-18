@@ -1,0 +1,292 @@
+/* =====================================================================
+   Deep Learning Module 2 — Ebook stylesheet
+   Design goals: quiet luxury for long-form technical reading.
+   Serif body + sans headings + mono code. Restrained ornamentation.
+   ===================================================================== */
+
+/* ---------- Base typography ---------- */
+html {
+  -webkit-hyphens: auto;
+  -epub-hyphens: auto;
+  hyphens: auto;
+}
+
+body {
+  font-family: "Charter", "Georgia", "Noto Serif", serif;
+  font-size: 1em;
+  line-height: 1.6;
+  text-align: justify;
+  margin: 0 1.2em;
+  color: #111;
+}
+
+/* ---------- Headings ---------- */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Inter", "Noto Sans", "Helvetica Neue", sans-serif;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #0a2c3a;
+  margin-top: 1.8em;
+  margin-bottom: 0.6em;
+  text-align: left;
+  -webkit-hyphens: none;
+  hyphens: none;
+  page-break-after: avoid;
+  break-after: avoid;
+}
+
+h1 {
+  font-size: 1.9em;
+  margin-top: 2.4em;
+  border-bottom: 2px solid #0a2c3a;
+  padding-bottom: 0.25em;
+  page-break-before: always;
+  break-before: page;
+}
+
+h2 {
+  font-size: 1.45em;
+  color: #124055;
+  border-bottom: 1px solid #b7c9d2;
+  padding-bottom: 0.15em;
+}
+
+h3 {
+  font-size: 1.2em;
+  color: #1a5570;
+}
+
+h4 { font-size: 1.05em; color: #214f66; }
+h5, h6 { font-size: 1em; font-style: italic; color: #333; }
+
+/* ---------- Body prose ---------- */
+p {
+  margin: 0.7em 0;
+  orphans: 3;
+  widows: 3;
+}
+
+em { font-style: italic; }
+strong { font-weight: 600; color: #0a2c3a; }
+
+/* Subtle links */
+a {
+  color: #0a5581;
+  text-decoration: none;
+  border-bottom: 1px dotted #88a8bb;
+}
+a:hover { border-bottom-style: solid; }
+
+/* ---------- Blockquotes / callouts ---------- */
+blockquote {
+  margin: 1.2em 0.6em;
+  padding: 0.8em 1.1em;
+  border-left: 4px solid #d8a24d;
+  background: #fbf6ea;
+  color: #3a2a10;
+  font-size: 0.97em;
+  line-height: 1.55;
+}
+
+blockquote p { margin: 0.35em 0; }
+
+/* ---------- Lists ---------- */
+ul, ol { padding-left: 1.4em; }
+li { margin: 0.25em 0; }
+
+/* ---------- Code ---------- */
+code {
+  font-family: "Fira Code", "JetBrains Mono", "SF Mono", "Menlo", monospace;
+  font-size: 0.92em;
+  background: #f2f2f0;
+  padding: 0.08em 0.3em;
+  border-radius: 3px;
+  color: #8b2a2a;
+  -webkit-hyphens: none;
+  hyphens: none;
+}
+
+pre {
+  font-family: "Fira Code", "JetBrains Mono", "SF Mono", "Menlo", monospace;
+  font-size: 0.88em;
+  line-height: 1.45;
+  background: #f8f8f6;
+  border: 1px solid #e0dfda;
+  border-radius: 4px;
+  padding: 0.85em 1em;
+  margin: 1em 0;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+pre code {
+  background: transparent;
+  padding: 0;
+  color: #222;
+  border-radius: 0;
+}
+
+/* ---------- Tables ---------- */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: 0.94em;
+  font-family: "Inter", "Noto Sans", sans-serif;
+}
+
+thead {
+  background: #0a2c3a;
+  color: #fff;
+}
+
+th, td {
+  padding: 0.55em 0.7em;
+  border-bottom: 1px solid #d2d2d0;
+  text-align: left;
+  vertical-align: top;
+}
+
+tbody tr:nth-child(even) { background: #fafaf7; }
+
+/* ---------- Figures / images ---------- */
+figure, p img {
+  display: block;
+  margin: 1.2em auto;
+  max-width: 92%;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+figcaption {
+  font-family: "Inter", "Noto Sans", sans-serif;
+  font-size: 0.88em;
+  color: #555;
+  text-align: center;
+  margin-top: 0.5em;
+  font-style: italic;
+}
+
+/* ---------- Horizontal rule ---------- */
+hr {
+  border: none;
+  border-top: 1px solid #ccbb88;
+  margin: 2em auto;
+  width: 60%;
+}
+
+/* ---------- Math ---------- */
+math, .math {
+  font-family: "Latin Modern Math", "Cambria Math", serif;
+}
+
+.display { margin: 0.8em 0; }
+
+/* ---------- Chapter/part title pages (custom class) ---------- */
+.part-title {
+  text-align: center;
+  padding-top: 6em;
+  font-family: "Inter", sans-serif;
+}
+
+.part-title .label {
+  font-size: 0.9em;
+  letter-spacing: 0.3em;
+  color: #8c6f3f;
+  text-transform: uppercase;
+}
+
+.part-title h1 {
+  border: none;
+  font-size: 2.4em;
+  margin-top: 0.3em;
+}
+
+/* ---------- Update box (blocks from atualizacoes_2023_2026) ---------- */
+div.update-box {
+  background: #f1f6f9;
+  border-left: 5px solid #1a5570;
+  padding: 1em 1.3em 0.6em;
+  margin: 1.5em 0;
+  border-radius: 2px;
+}
+
+div.update-box > h2:first-child,
+div.update-box > h3:first-child {
+  margin-top: 0.2em;
+  color: #0a2c3a;
+}
+
+div.update-box h2 {
+  border: none;
+  padding-bottom: 0;
+  font-size: 1.3em;
+}
+
+/* Legacy flag emoji styling — slightly larger for visibility */
+.flag-legacy, .flag-partial, .flag-ok {
+  font-size: 1.1em;
+}
+
+/* ---------- Front matter ---------- */
+.title-block {
+  text-align: center;
+  padding-top: 4em;
+}
+
+.title-block h1 {
+  border: none;
+  font-size: 2.6em;
+  page-break-before: auto;
+}
+
+.title-block .subtitle {
+  font-size: 1.2em;
+  color: #555;
+  font-style: italic;
+  margin-top: 0.2em;
+}
+
+.title-block .author {
+  margin-top: 3em;
+  font-family: "Inter", sans-serif;
+  color: #333;
+}
+
+/* ---------- Table of contents ---------- */
+nav#toc ol {
+  list-style: none;
+  padding-left: 0;
+}
+
+nav#toc ol ol {
+  padding-left: 1.5em;
+}
+
+nav#toc li {
+  margin: 0.3em 0;
+  font-family: "Inter", sans-serif;
+}
+
+/* ---------- Page breaks ---------- */
+.pagebreak, .page-break {
+  page-break-after: always;
+  break-after: page;
+}
+
+/* ---------- Dark-mode hint (readers that honor it) ---------- */
+@media (prefers-color-scheme: dark) {
+  body { background: #1a1a1a; color: #e5e5e5; }
+  h1, h2, h3, h4 { color: #e0cfa1; }
+  a { color: #9fc7df; }
+  blockquote { background: #2a2414; color: #e5d9b5; border-left-color: #c9a44a; }
+  code { background: #2c2c2a; color: #ffa0a0; }
+  pre { background: #222220; border-color: #3a3a38; color: #eee; }
+  thead { background: #0a2c3a; color: #fff; }
+  tbody tr:nth-child(even) { background: #222; }
+  div.update-box { background: #18262d; border-left-color: #6d9ab0; }
+}

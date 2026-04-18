@@ -1,0 +1,17 @@
+---
+title: "Otimização em Deep Learning"
+subtitle: "Módulo 2 — Base (Dive into Deep Learning) + Atualizações 2023→2026"
+author:
+  - "Compilado para o MsC AI · UC Boulder"
+language: pt-BR
+lang: pt-BR
+date: "2026-04"
+rights: "Excertos do livro *Dive into Deep Learning* (Zhang, Lipton, Li, Smola) sob licença CC BY-SA 4.0. Extensões e comentários editoriais são originais deste ebook."
+description: |
+  Edição unificada bilíngue que integra os excertos do livro Dive into Deep Learning
+  cobertos no Módulo 2 (Weight Decay, Generalization, Dropout, SGD, Momentum, Adam,
+  LR Scheduling) com um dossiê de atualizações 2023-2026 sobre otimização moderna:
+  AdamW, Lion, Sophia, Muon, Schedule-Free, WSD, scaling laws, grokking, double
+  descent e as mudanças no regime de treinamento em larga escala.
+publisher: "Edição interna — MsC AI · UC Boulder"
+---
