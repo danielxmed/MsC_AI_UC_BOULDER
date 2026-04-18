@@ -5,6 +5,7 @@ build_ebook/base_chapters/
 build_ebook/updates/
 build_ebook/extracted_images/
 build_ebook/assets/
+build_ebook/d2l_assets/
 build_ebook/raw_pages.json
 build_ebook/ebook.md
 

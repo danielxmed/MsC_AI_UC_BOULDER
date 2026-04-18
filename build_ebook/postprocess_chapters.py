@@ -1,10 +1,8 @@
-"""Post-process extracted chapter markdowns.
+"""[DEPRECATED] Post-processing for the PDF-based extraction path.
 
-- Trim §5.4 tail from ch01 and §12.9 tail from ch05 into a separate "fragments"
-  chapter so the main chapters end cleanly.
-- Rewrite image paths to `assets/<basename>`.
-- Normalize headings: strip bold markers that pymupdf4llm adds (## **3.7 ...**).
-- Remove page footer cruft (chapter names + page numbers) that leaks between pages.
+Paired with the now-deprecated `extract_pdf.py`. The current pipeline fetches
+clean HTML via `fetch_d2l_chapters.py` and applies its own polish, so this
+module is no longer referenced by `build.sh`. Kept for reference.
 """
 
 from __future__ import annotations

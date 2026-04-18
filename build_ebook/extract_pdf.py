@@ -1,7 +1,12 @@
-"""Extract base PDF (D2L excerpts) into per-chapter markdown with images.
+"""[DEPRECATED] PDF-based extraction of D2L excerpts.
 
-Uses pymupdf4llm for text+math fidelity; PyMuPDF for image extraction.
-Splits by D2L section numbers in headings (3.7, 5.5, 5.6, 12.4, 12.5, 12.6, 12.10, 12.11).
+The build pipeline no longer uses this script. `pymupdf4llm` against the
+dense-math, dense-code PDF produced unreadable output (corrupt equations,
+`__init__` rendered as `**init**`, code as prose). It was replaced by
+`fetch_d2l_chapters.py`, which pulls the canonical HTML from d2l.ai and
+converts it with pandoc.
+
+Kept on disk for historical reference. Do not run from `build.sh`.
 """
 
 from __future__ import annotations

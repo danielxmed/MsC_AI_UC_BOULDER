@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    
+    <title>12.4. Stochastic Gradient Descent &#8212; Dive into Deep Learning 1.0.3 documentation</title>
+
+    <link rel="stylesheet" href="../_static/material-design-lite-1.3.0/material.blue-deep_orange.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinx_materialdesign_theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/fontawesome/all.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/fonts.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/d2l.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/d2l.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="12.5. Minibatch Stochastic Gradient Descent" href="minibatch-sgd.html" />
+    <link rel="prev" title="12.3. Gradient Descent" href="gd.html" /> 
+  </head>
+<body>
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-drawer"><header class="mdl-layout__header mdl-layout__header--waterfall ">
+    <div class="mdl-layout__header-row">
+        
+        <nav class="mdl-navigation breadcrumb">
+            <a class="mdl-navigation__link" href="index.html"><span class="section-number">12. </span>Optimization Algorithms</a><i class="material-icons">navigate_next</i>
+            <a class="mdl-navigation__link is-active"><span class="section-number">12.4. </span>Stochastic Gradient Descent</a>
+        </nav>
+        <div class="mdl-layout-spacer"></div>
+        <nav class="mdl-navigation">
+        
+<form class="form-inline pull-sm-right" action="../search.html" method="get">
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable mdl-textfield--floating-label mdl-textfield--align-right">
+        <label id="quick-search-icon" class="mdl-button mdl-js-button mdl-button--icon"  for="waterfall-exp">
+          <i class="material-icons">search</i>
+        </label>
+        <div class="mdl-textfield__expandable-holder">
+          <input class="mdl-textfield__input" type="text" name="q"  id="waterfall-exp" placeholder="Search" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+        </div>
+      </div>
+      <div class="mdl-tooltip" data-mdl-for="quick-search-icon">
+      Quick search
+      </div>
+</form>
+        
+<a id="button-show-source"
+    class="mdl-button mdl-js-button mdl-button--icon"
+    href="../_sources/chapter_optimization/sgd.rst.txt" rel="nofollow">
+  <i class="material-icons">code</i>
+</a>
+<div class="mdl-tooltip" data-mdl-for="button-show-source">
+Show Source
+</div>
+        </nav>
+    </div>
+    <div class="mdl-layout__header-row header-links">
+      <div class="mdl-layout-spacer"></div>
+      <nav class="mdl-navigation">
+          
+              <a  class="mdl-navigation__link" href="http://preview.d2l.ai/d2l-en/master">
+                  <i class="fas fa-book"></i>
+                  Preview Version
+              </a>
+          
+              <a  class="mdl-navigation__link" href="https://d2l.ai/d2l-en.pdf">
+                  <i class="fas fa-file-pdf"></i>
+                  PyTorch
+              </a>
+          
+              <a  class="mdl-navigation__link" href="https://d2l.ai/d2l-en-mxnet.pdf">
+                  <i class="fas fa-file-pdf"></i>
+                  MXNet
+              </a>
+          
+              <a  class="mdl-navigation__link" href="https://d2l.ai/d2l-en.zip">
+                  <i class="fab fa-python"></i>
+                  Notebooks
+              </a>
+          
+              <a  class="mdl-navigation__link" href="https://courses.d2l.ai">
+                  <i class="fas fa-user-graduate"></i>
+                  Courses
+              </a>
+          
+              <a  class="mdl-navigation__link" href="https://github.com/d2l-ai/d2l-en">
+                  <i class="fab fa-github"></i>
+                  GitHub
+              </a>
+          
+              <a  class="mdl-navigation__link" href="https://zh.d2l.ai">
+                  <i class="fas fa-external-link-alt"></i>
+                  中文版
+              </a>
+      </nav>
+    </div>
+</header><header class="mdl-layout__drawer">
+    
+          <!-- Title -->
+      <span class="mdl-layout-title">
+          <a class="title" href="../index.html">
+              <img class="logo" src="../_static/logo-with-text.png" alt="Dive into Deep Learning"/>
+          </a>
+      </span>
+    
+    
+      <div class="globaltoc">
+        <span class="mdl-layout-title toc">Table Of Contents</span>
+        
+        
+            
+            <nav class="mdl-navigation">
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_preface/index.html">Preface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_installation/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_notation/index.html">Notation</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../chapter_introduction/index.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_preliminaries/index.html">2. Preliminaries</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_preliminaries/ndarray.html">2.1. Data Manipulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_preliminaries/pandas.html">2.2. Data Preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_preliminaries/linear-algebra.html">2.3. Linear Algebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_preliminaries/calculus.html">2.4. Calculus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_preliminaries/autograd.html">2.5. Automatic Differentiation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_preliminaries/probability.html">2.6. Probability and Statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_preliminaries/lookup-api.html">2.7. Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_linear-regression/index.html">3. Linear Neural Networks for Regression</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-regression/linear-regression.html">3.1. Linear Regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-regression/oo-design.html">3.2. Object-Oriented Design for Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-regression/synthetic-regression-data.html">3.3. Synthetic Regression Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-regression/linear-regression-scratch.html">3.4. Linear Regression Implementation from Scratch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-regression/linear-regression-concise.html">3.5. Concise Implementation of Linear Regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-regression/generalization.html">3.6. Generalization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-regression/weight-decay.html">3.7. Weight Decay</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_linear-classification/index.html">4. Linear Neural Networks for Classification</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-classification/softmax-regression.html">4.1. Softmax Regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-classification/image-classification-dataset.html">4.2. The Image Classification Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-classification/classification.html">4.3. The Base Classification Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-classification/softmax-regression-scratch.html">4.4. Softmax Regression Implementation from Scratch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-classification/softmax-regression-concise.html">4.5. Concise Implementation of Softmax Regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-classification/generalization-classification.html">4.6. Generalization in Classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-classification/environment-and-distribution-shift.html">4.7. Environment and Distribution Shift</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_multilayer-perceptrons/index.html">5. Multilayer Perceptrons</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_multilayer-perceptrons/mlp.html">5.1. Multilayer Perceptrons</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_multilayer-perceptrons/mlp-implementation.html">5.2. Implementation of Multilayer Perceptrons</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_multilayer-perceptrons/backprop.html">5.3. Forward Propagation, Backward Propagation, and Computational Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_multilayer-perceptrons/numerical-stability-and-init.html">5.4. Numerical Stability and Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_multilayer-perceptrons/generalization-deep.html">5.5. Generalization in Deep Learning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_multilayer-perceptrons/dropout.html">5.6. Dropout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_multilayer-perceptrons/kaggle-house-price.html">5.7. Predicting House Prices on Kaggle</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_builders-guide/index.html">6. Builders’ Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_builders-guide/model-construction.html">6.1. Layers and Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_builders-guide/parameters.html">6.2. Parameter Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_builders-guide/init-param.html">6.3. Parameter Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_builders-guide/lazy-init.html">6.4. Lazy Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_builders-guide/custom-layer.html">6.5. Custom Layers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_builders-guide/read-write.html">6.6. File I/O</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_builders-guide/use-gpu.html">6.7. GPUs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_convolutional-neural-networks/index.html">7. Convolutional Neural Networks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-neural-networks/why-conv.html">7.1. From Fully Connected Layers to Convolutions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-neural-networks/conv-layer.html">7.2. Convolutions for Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-neural-networks/padding-and-strides.html">7.3. Padding and Stride</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-neural-networks/channels.html">7.4. Multiple Input and Multiple Output Channels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-neural-networks/pooling.html">7.5. Pooling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-neural-networks/lenet.html">7.6. Convolutional Neural Networks (LeNet)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_convolutional-modern/index.html">8. Modern Convolutional Neural Networks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-modern/alexnet.html">8.1. Deep Convolutional Neural Networks (AlexNet)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-modern/vgg.html">8.2. Networks Using Blocks (VGG)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-modern/nin.html">8.3. Network in Network (NiN)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-modern/googlenet.html">8.4. Multi-Branch Networks (GoogLeNet)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-modern/batch-norm.html">8.5. Batch Normalization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-modern/resnet.html">8.6. Residual Networks (ResNet) and ResNeXt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-modern/densenet.html">8.7. Densely Connected Networks (DenseNet)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-modern/cnn-design.html">8.8. Designing Convolution Network Architectures</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_recurrent-neural-networks/index.html">9. Recurrent Neural Networks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-neural-networks/sequence.html">9.1. Working with Sequences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-neural-networks/text-sequence.html">9.2. Converting Raw Text into Sequence Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-neural-networks/language-model.html">9.3. Language Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-neural-networks/rnn.html">9.4. Recurrent Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-neural-networks/rnn-scratch.html">9.5. Recurrent Neural Network Implementation from Scratch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-neural-networks/rnn-concise.html">9.6. Concise Implementation of Recurrent Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-neural-networks/bptt.html">9.7. Backpropagation Through Time</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_recurrent-modern/index.html">10. Modern Recurrent Neural Networks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-modern/lstm.html">10.1. Long Short-Term Memory (LSTM)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-modern/gru.html">10.2. Gated Recurrent Units (GRU)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-modern/deep-rnn.html">10.3. Deep Recurrent Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-modern/bi-rnn.html">10.4. Bidirectional Recurrent Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-modern/machine-translation-and-dataset.html">10.5. Machine Translation and the Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-modern/encoder-decoder.html">10.6. The Encoder–Decoder Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-modern/seq2seq.html">10.7. Sequence-to-Sequence Learning for Machine Translation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-modern/beam-search.html">10.8. Beam Search</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_attention-mechanisms-and-transformers/index.html">11. Attention Mechanisms and Transformers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_attention-mechanisms-and-transformers/queries-keys-values.html">11.1. Queries, Keys, and Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_attention-mechanisms-and-transformers/attention-pooling.html">11.2. Attention Pooling by Similarity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_attention-mechanisms-and-transformers/attention-scoring-functions.html">11.3. Attention Scoring Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_attention-mechanisms-and-transformers/bahdanau-attention.html">11.4. The Bahdanau Attention Mechanism</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_attention-mechanisms-and-transformers/multihead-attention.html">11.5. Multi-Head Attention</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_attention-mechanisms-and-transformers/self-attention-and-positional-encoding.html">11.6. Self-Attention and Positional Encoding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_attention-mechanisms-and-transformers/transformer.html">11.7. The Transformer Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_attention-mechanisms-and-transformers/vision-transformer.html">11.8. Transformers for Vision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_attention-mechanisms-and-transformers/large-pretraining-transformers.html">11.9. Large-Scale Pretraining with Transformers</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">12. Optimization Algorithms</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="optimization-intro.html">12.1. Optimization and Deep Learning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="convexity.html">12.2. Convexity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gd.html">12.3. Gradient Descent</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">12.4. Stochastic Gradient Descent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="minibatch-sgd.html">12.5. Minibatch Stochastic Gradient Descent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="momentum.html">12.6. Momentum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adagrad.html">12.7. Adagrad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rmsprop.html">12.8. RMSProp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adadelta.html">12.9. Adadelta</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adam.html">12.10. Adam</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lr-scheduler.html">12.11. Learning Rate Scheduling</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_computational-performance/index.html">13. Computational Performance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computational-performance/hybridize.html">13.1. Compilers and Interpreters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computational-performance/async-computation.html">13.2. Asynchronous Computation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computational-performance/auto-parallelism.html">13.3. Automatic Parallelism</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computational-performance/hardware.html">13.4. Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computational-performance/multiple-gpus.html">13.5. Training on Multiple GPUs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computational-performance/multiple-gpus-concise.html">13.6. Concise Implementation for Multiple GPUs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computational-performance/parameterserver.html">13.7. Parameter Servers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_computer-vision/index.html">14. Computer Vision</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/image-augmentation.html">14.1. Image Augmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/fine-tuning.html">14.2. Fine-Tuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/bounding-box.html">14.3. Object Detection and Bounding Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/anchor.html">14.4. Anchor Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/multiscale-object-detection.html">14.5. Multiscale Object Detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/object-detection-dataset.html">14.6. The Object Detection Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/ssd.html">14.7. Single Shot Multibox Detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/rcnn.html">14.8. Region-based CNNs (R-CNNs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/semantic-segmentation-and-dataset.html">14.9. Semantic Segmentation and the Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/transposed-conv.html">14.10. Transposed Convolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/fcn.html">14.11. Fully Convolutional Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/neural-style.html">14.12. Neural Style Transfer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/kaggle-cifar10.html">14.13. Image Classification (CIFAR-10) on Kaggle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/kaggle-dog.html">14.14. Dog Breed Identification (ImageNet Dogs) on Kaggle</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_natural-language-processing-pretraining/index.html">15. Natural Language Processing: Pretraining</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-pretraining/word2vec.html">15.1. Word Embedding (word2vec)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-pretraining/approx-training.html">15.2. Approximate Training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-pretraining/word-embedding-dataset.html">15.3. The Dataset for Pretraining Word Embeddings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-pretraining/word2vec-pretraining.html">15.4. Pretraining word2vec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-pretraining/glove.html">15.5. Word Embedding with Global Vectors (GloVe)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-pretraining/subword-embedding.html">15.6. Subword Embedding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-pretraining/similarity-analogy.html">15.7. Word Similarity and Analogy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-pretraining/bert.html">15.8. Bidirectional Encoder Representations from Transformers (BERT)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-pretraining/bert-dataset.html">15.9. The Dataset for Pretraining BERT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-pretraining/bert-pretraining.html">15.10. Pretraining BERT</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_natural-language-processing-applications/index.html">16. Natural Language Processing: Applications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-applications/sentiment-analysis-and-dataset.html">16.1. Sentiment Analysis and the Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-applications/sentiment-analysis-rnn.html">16.2. Sentiment Analysis: Using Recurrent Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-applications/sentiment-analysis-cnn.html">16.3. Sentiment Analysis: Using Convolutional Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-applications/natural-language-inference-and-dataset.html">16.4. Natural Language Inference and the Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-applications/natural-language-inference-attention.html">16.5. Natural Language Inference: Using Attention</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-applications/finetuning-bert.html">16.6. Fine-Tuning BERT for Sequence-Level and Token-Level Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-applications/natural-language-inference-bert.html">16.7. Natural Language Inference: Fine-Tuning BERT</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_reinforcement-learning/index.html">17. Reinforcement Learning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_reinforcement-learning/mdp.html">17.1. Markov Decision Process (MDP)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_reinforcement-learning/value-iter.html">17.2. Value Iteration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_reinforcement-learning/qlearning.html">17.3. Q-Learning</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_gaussian-processes/index.html">18. Gaussian Processes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_gaussian-processes/gp-intro.html">18.1. Introduction to Gaussian Processes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_gaussian-processes/gp-priors.html">18.2. Gaussian Process Priors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_gaussian-processes/gp-inference.html">18.3. Gaussian Process Inference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_hyperparameter-optimization/index.html">19. Hyperparameter Optimization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_hyperparameter-optimization/hyperopt-intro.html">19.1. What Is Hyperparameter Optimization?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_hyperparameter-optimization/hyperopt-api.html">19.2. Hyperparameter Optimization API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_hyperparameter-optimization/rs-async.html">19.3. Asynchronous Random Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_hyperparameter-optimization/sh-intro.html">19.4. Multi-Fidelity Hyperparameter Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_hyperparameter-optimization/sh-async.html">19.5. Asynchronous Successive Halving</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_generative-adversarial-networks/index.html">20. Generative Adversarial Networks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_generative-adversarial-networks/gan.html">20.1. Generative Adversarial Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_generative-adversarial-networks/dcgan.html">20.2. Deep Convolutional Generative Adversarial Networks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_recommender-systems/index.html">21. Recommender Systems</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recommender-systems/recsys-intro.html">21.1. Overview of Recommender Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recommender-systems/movielens.html">21.2. The MovieLens Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recommender-systems/mf.html">21.3. Matrix Factorization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recommender-systems/autorec.html">21.4. AutoRec: Rating Prediction with Autoencoders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recommender-systems/ranking.html">21.5. Personalized Ranking for Recommender Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recommender-systems/neumf.html">21.6. Neural Collaborative Filtering for Personalized Ranking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recommender-systems/seqrec.html">21.7. Sequence-Aware Recommender Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recommender-systems/ctr.html">21.8. Feature-Rich Recommender Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recommender-systems/fm.html">21.9. Factorization Machines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recommender-systems/deepfm.html">21.10. Deep Factorization Machines</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_appendix-mathematics-for-deep-learning/index.html">22. Appendix: Mathematics for Deep Learning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-mathematics-for-deep-learning/geometry-linear-algebraic-ops.html">22.1. Geometry and Linear Algebraic Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-mathematics-for-deep-learning/eigendecomposition.html">22.2. Eigendecompositions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-mathematics-for-deep-learning/single-variable-calculus.html">22.3. Single Variable Calculus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-mathematics-for-deep-learning/multivariable-calculus.html">22.4. Multivariable Calculus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-mathematics-for-deep-learning/integral-calculus.html">22.5. Integral Calculus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-mathematics-for-deep-learning/random-variables.html">22.6. Random Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-mathematics-for-deep-learning/maximum-likelihood.html">22.7. Maximum Likelihood</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-mathematics-for-deep-learning/distributions.html">22.8. Distributions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-mathematics-for-deep-learning/naive-bayes.html">22.9. Naive Bayes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-mathematics-for-deep-learning/statistics.html">22.10. Statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-mathematics-for-deep-learning/information-theory.html">22.11. Information Theory</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_appendix-tools-for-deep-learning/index.html">23. Appendix: Tools for Deep Learning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-tools-for-deep-learning/jupyter.html">23.1. Using Jupyter Notebooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-tools-for-deep-learning/sagemaker.html">23.2. Using Amazon SageMaker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-tools-for-deep-learning/aws.html">23.3. Using AWS EC2 Instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-tools-for-deep-learning/colab.html">23.4. Using Google Colab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-tools-for-deep-learning/selecting-servers-gpus.html">23.5. Selecting Servers and GPUs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-tools-for-deep-learning/contributing.html">23.6. Contributing to This Book</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-tools-for-deep-learning/utils.html">23.7. Utility Functions and Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-tools-for-deep-learning/d2l.html">23.8. The <code class="docutils literal notranslate"><span class="pre">d2l</span></code> API Document</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_references/zreferences.html">References</a></li>
+</ul>
+
+            </nav>
+        
+        </div>
+    
+</header>
+        <main class="mdl-layout__content" tabIndex="0">
+
+	<script type="text/javascript" src="../_static/sphinx_materialdesign_theme.js "></script>
+    <header class="mdl-layout__drawer">
+    
+          <!-- Title -->
+      <span class="mdl-layout-title">
+          <a class="title" href="../index.html">
+              <img class="logo" src="../_static/logo-with-text.png" alt="Dive into Deep Learning"/>
+          </a>
+      </span>
+    
+    
+      <div class="globaltoc">
+        <span class="mdl-layout-title toc">Table Of Contents</span>
+        
+        
+            
+            <nav class="mdl-navigation">
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_preface/index.html">Preface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_installation/index.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_notation/index.html">Notation</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../chapter_introduction/index.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_preliminaries/index.html">2. Preliminaries</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_preliminaries/ndarray.html">2.1. Data Manipulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_preliminaries/pandas.html">2.2. Data Preprocessing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_preliminaries/linear-algebra.html">2.3. Linear Algebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_preliminaries/calculus.html">2.4. Calculus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_preliminaries/autograd.html">2.5. Automatic Differentiation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_preliminaries/probability.html">2.6. Probability and Statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_preliminaries/lookup-api.html">2.7. Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_linear-regression/index.html">3. Linear Neural Networks for Regression</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-regression/linear-regression.html">3.1. Linear Regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-regression/oo-design.html">3.2. Object-Oriented Design for Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-regression/synthetic-regression-data.html">3.3. Synthetic Regression Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-regression/linear-regression-scratch.html">3.4. Linear Regression Implementation from Scratch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-regression/linear-regression-concise.html">3.5. Concise Implementation of Linear Regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-regression/generalization.html">3.6. Generalization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-regression/weight-decay.html">3.7. Weight Decay</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_linear-classification/index.html">4. Linear Neural Networks for Classification</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-classification/softmax-regression.html">4.1. Softmax Regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-classification/image-classification-dataset.html">4.2. The Image Classification Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-classification/classification.html">4.3. The Base Classification Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-classification/softmax-regression-scratch.html">4.4. Softmax Regression Implementation from Scratch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-classification/softmax-regression-concise.html">4.5. Concise Implementation of Softmax Regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-classification/generalization-classification.html">4.6. Generalization in Classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_linear-classification/environment-and-distribution-shift.html">4.7. Environment and Distribution Shift</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_multilayer-perceptrons/index.html">5. Multilayer Perceptrons</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_multilayer-perceptrons/mlp.html">5.1. Multilayer Perceptrons</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_multilayer-perceptrons/mlp-implementation.html">5.2. Implementation of Multilayer Perceptrons</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_multilayer-perceptrons/backprop.html">5.3. Forward Propagation, Backward Propagation, and Computational Graphs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_multilayer-perceptrons/numerical-stability-and-init.html">5.4. Numerical Stability and Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_multilayer-perceptrons/generalization-deep.html">5.5. Generalization in Deep Learning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_multilayer-perceptrons/dropout.html">5.6. Dropout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_multilayer-perceptrons/kaggle-house-price.html">5.7. Predicting House Prices on Kaggle</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_builders-guide/index.html">6. Builders’ Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_builders-guide/model-construction.html">6.1. Layers and Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_builders-guide/parameters.html">6.2. Parameter Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_builders-guide/init-param.html">6.3. Parameter Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_builders-guide/lazy-init.html">6.4. Lazy Initialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_builders-guide/custom-layer.html">6.5. Custom Layers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_builders-guide/read-write.html">6.6. File I/O</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_builders-guide/use-gpu.html">6.7. GPUs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_convolutional-neural-networks/index.html">7. Convolutional Neural Networks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-neural-networks/why-conv.html">7.1. From Fully Connected Layers to Convolutions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-neural-networks/conv-layer.html">7.2. Convolutions for Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-neural-networks/padding-and-strides.html">7.3. Padding and Stride</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-neural-networks/channels.html">7.4. Multiple Input and Multiple Output Channels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-neural-networks/pooling.html">7.5. Pooling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-neural-networks/lenet.html">7.6. Convolutional Neural Networks (LeNet)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_convolutional-modern/index.html">8. Modern Convolutional Neural Networks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-modern/alexnet.html">8.1. Deep Convolutional Neural Networks (AlexNet)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-modern/vgg.html">8.2. Networks Using Blocks (VGG)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-modern/nin.html">8.3. Network in Network (NiN)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-modern/googlenet.html">8.4. Multi-Branch Networks (GoogLeNet)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-modern/batch-norm.html">8.5. Batch Normalization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-modern/resnet.html">8.6. Residual Networks (ResNet) and ResNeXt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-modern/densenet.html">8.7. Densely Connected Networks (DenseNet)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_convolutional-modern/cnn-design.html">8.8. Designing Convolution Network Architectures</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_recurrent-neural-networks/index.html">9. Recurrent Neural Networks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-neural-networks/sequence.html">9.1. Working with Sequences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-neural-networks/text-sequence.html">9.2. Converting Raw Text into Sequence Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-neural-networks/language-model.html">9.3. Language Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-neural-networks/rnn.html">9.4. Recurrent Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-neural-networks/rnn-scratch.html">9.5. Recurrent Neural Network Implementation from Scratch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-neural-networks/rnn-concise.html">9.6. Concise Implementation of Recurrent Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-neural-networks/bptt.html">9.7. Backpropagation Through Time</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_recurrent-modern/index.html">10. Modern Recurrent Neural Networks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-modern/lstm.html">10.1. Long Short-Term Memory (LSTM)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-modern/gru.html">10.2. Gated Recurrent Units (GRU)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-modern/deep-rnn.html">10.3. Deep Recurrent Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-modern/bi-rnn.html">10.4. Bidirectional Recurrent Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-modern/machine-translation-and-dataset.html">10.5. Machine Translation and the Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-modern/encoder-decoder.html">10.6. The Encoder–Decoder Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-modern/seq2seq.html">10.7. Sequence-to-Sequence Learning for Machine Translation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recurrent-modern/beam-search.html">10.8. Beam Search</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_attention-mechanisms-and-transformers/index.html">11. Attention Mechanisms and Transformers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_attention-mechanisms-and-transformers/queries-keys-values.html">11.1. Queries, Keys, and Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_attention-mechanisms-and-transformers/attention-pooling.html">11.2. Attention Pooling by Similarity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_attention-mechanisms-and-transformers/attention-scoring-functions.html">11.3. Attention Scoring Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_attention-mechanisms-and-transformers/bahdanau-attention.html">11.4. The Bahdanau Attention Mechanism</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_attention-mechanisms-and-transformers/multihead-attention.html">11.5. Multi-Head Attention</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_attention-mechanisms-and-transformers/self-attention-and-positional-encoding.html">11.6. Self-Attention and Positional Encoding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_attention-mechanisms-and-transformers/transformer.html">11.7. The Transformer Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_attention-mechanisms-and-transformers/vision-transformer.html">11.8. Transformers for Vision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_attention-mechanisms-and-transformers/large-pretraining-transformers.html">11.9. Large-Scale Pretraining with Transformers</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">12. Optimization Algorithms</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="optimization-intro.html">12.1. Optimization and Deep Learning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="convexity.html">12.2. Convexity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gd.html">12.3. Gradient Descent</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">12.4. Stochastic Gradient Descent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="minibatch-sgd.html">12.5. Minibatch Stochastic Gradient Descent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="momentum.html">12.6. Momentum</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adagrad.html">12.7. Adagrad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rmsprop.html">12.8. RMSProp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adadelta.html">12.9. Adadelta</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adam.html">12.10. Adam</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lr-scheduler.html">12.11. Learning Rate Scheduling</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_computational-performance/index.html">13. Computational Performance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computational-performance/hybridize.html">13.1. Compilers and Interpreters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computational-performance/async-computation.html">13.2. Asynchronous Computation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computational-performance/auto-parallelism.html">13.3. Automatic Parallelism</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computational-performance/hardware.html">13.4. Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computational-performance/multiple-gpus.html">13.5. Training on Multiple GPUs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computational-performance/multiple-gpus-concise.html">13.6. Concise Implementation for Multiple GPUs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computational-performance/parameterserver.html">13.7. Parameter Servers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_computer-vision/index.html">14. Computer Vision</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/image-augmentation.html">14.1. Image Augmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/fine-tuning.html">14.2. Fine-Tuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/bounding-box.html">14.3. Object Detection and Bounding Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/anchor.html">14.4. Anchor Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/multiscale-object-detection.html">14.5. Multiscale Object Detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/object-detection-dataset.html">14.6. The Object Detection Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/ssd.html">14.7. Single Shot Multibox Detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/rcnn.html">14.8. Region-based CNNs (R-CNNs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/semantic-segmentation-and-dataset.html">14.9. Semantic Segmentation and the Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/transposed-conv.html">14.10. Transposed Convolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/fcn.html">14.11. Fully Convolutional Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/neural-style.html">14.12. Neural Style Transfer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/kaggle-cifar10.html">14.13. Image Classification (CIFAR-10) on Kaggle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_computer-vision/kaggle-dog.html">14.14. Dog Breed Identification (ImageNet Dogs) on Kaggle</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_natural-language-processing-pretraining/index.html">15. Natural Language Processing: Pretraining</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-pretraining/word2vec.html">15.1. Word Embedding (word2vec)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-pretraining/approx-training.html">15.2. Approximate Training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-pretraining/word-embedding-dataset.html">15.3. The Dataset for Pretraining Word Embeddings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-pretraining/word2vec-pretraining.html">15.4. Pretraining word2vec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-pretraining/glove.html">15.5. Word Embedding with Global Vectors (GloVe)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-pretraining/subword-embedding.html">15.6. Subword Embedding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-pretraining/similarity-analogy.html">15.7. Word Similarity and Analogy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-pretraining/bert.html">15.8. Bidirectional Encoder Representations from Transformers (BERT)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-pretraining/bert-dataset.html">15.9. The Dataset for Pretraining BERT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-pretraining/bert-pretraining.html">15.10. Pretraining BERT</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_natural-language-processing-applications/index.html">16. Natural Language Processing: Applications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-applications/sentiment-analysis-and-dataset.html">16.1. Sentiment Analysis and the Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-applications/sentiment-analysis-rnn.html">16.2. Sentiment Analysis: Using Recurrent Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-applications/sentiment-analysis-cnn.html">16.3. Sentiment Analysis: Using Convolutional Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-applications/natural-language-inference-and-dataset.html">16.4. Natural Language Inference and the Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-applications/natural-language-inference-attention.html">16.5. Natural Language Inference: Using Attention</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-applications/finetuning-bert.html">16.6. Fine-Tuning BERT for Sequence-Level and Token-Level Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_natural-language-processing-applications/natural-language-inference-bert.html">16.7. Natural Language Inference: Fine-Tuning BERT</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_reinforcement-learning/index.html">17. Reinforcement Learning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_reinforcement-learning/mdp.html">17.1. Markov Decision Process (MDP)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_reinforcement-learning/value-iter.html">17.2. Value Iteration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_reinforcement-learning/qlearning.html">17.3. Q-Learning</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_gaussian-processes/index.html">18. Gaussian Processes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_gaussian-processes/gp-intro.html">18.1. Introduction to Gaussian Processes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_gaussian-processes/gp-priors.html">18.2. Gaussian Process Priors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_gaussian-processes/gp-inference.html">18.3. Gaussian Process Inference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_hyperparameter-optimization/index.html">19. Hyperparameter Optimization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_hyperparameter-optimization/hyperopt-intro.html">19.1. What Is Hyperparameter Optimization?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_hyperparameter-optimization/hyperopt-api.html">19.2. Hyperparameter Optimization API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_hyperparameter-optimization/rs-async.html">19.3. Asynchronous Random Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_hyperparameter-optimization/sh-intro.html">19.4. Multi-Fidelity Hyperparameter Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_hyperparameter-optimization/sh-async.html">19.5. Asynchronous Successive Halving</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_generative-adversarial-networks/index.html">20. Generative Adversarial Networks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_generative-adversarial-networks/gan.html">20.1. Generative Adversarial Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_generative-adversarial-networks/dcgan.html">20.2. Deep Convolutional Generative Adversarial Networks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_recommender-systems/index.html">21. Recommender Systems</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recommender-systems/recsys-intro.html">21.1. Overview of Recommender Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recommender-systems/movielens.html">21.2. The MovieLens Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recommender-systems/mf.html">21.3. Matrix Factorization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recommender-systems/autorec.html">21.4. AutoRec: Rating Prediction with Autoencoders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recommender-systems/ranking.html">21.5. Personalized Ranking for Recommender Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recommender-systems/neumf.html">21.6. Neural Collaborative Filtering for Personalized Ranking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recommender-systems/seqrec.html">21.7. Sequence-Aware Recommender Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recommender-systems/ctr.html">21.8. Feature-Rich Recommender Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recommender-systems/fm.html">21.9. Factorization Machines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_recommender-systems/deepfm.html">21.10. Deep Factorization Machines</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_appendix-mathematics-for-deep-learning/index.html">22. Appendix: Mathematics for Deep Learning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-mathematics-for-deep-learning/geometry-linear-algebraic-ops.html">22.1. Geometry and Linear Algebraic Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-mathematics-for-deep-learning/eigendecomposition.html">22.2. Eigendecompositions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-mathematics-for-deep-learning/single-variable-calculus.html">22.3. Single Variable Calculus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-mathematics-for-deep-learning/multivariable-calculus.html">22.4. Multivariable Calculus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-mathematics-for-deep-learning/integral-calculus.html">22.5. Integral Calculus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-mathematics-for-deep-learning/random-variables.html">22.6. Random Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-mathematics-for-deep-learning/maximum-likelihood.html">22.7. Maximum Likelihood</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-mathematics-for-deep-learning/distributions.html">22.8. Distributions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-mathematics-for-deep-learning/naive-bayes.html">22.9. Naive Bayes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-mathematics-for-deep-learning/statistics.html">22.10. Statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-mathematics-for-deep-learning/information-theory.html">22.11. Information Theory</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_appendix-tools-for-deep-learning/index.html">23. Appendix: Tools for Deep Learning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-tools-for-deep-learning/jupyter.html">23.1. Using Jupyter Notebooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-tools-for-deep-learning/sagemaker.html">23.2. Using Amazon SageMaker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-tools-for-deep-learning/aws.html">23.3. Using AWS EC2 Instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-tools-for-deep-learning/colab.html">23.4. Using Google Colab</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-tools-for-deep-learning/selecting-servers-gpus.html">23.5. Selecting Servers and GPUs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-tools-for-deep-learning/contributing.html">23.6. Contributing to This Book</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-tools-for-deep-learning/utils.html">23.7. Utility Functions and Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../chapter_appendix-tools-for-deep-learning/d2l.html">23.8. The <code class="docutils literal notranslate"><span class="pre">d2l</span></code> API Document</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../chapter_references/zreferences.html">References</a></li>
+</ul>
+
+            </nav>
+        
+        </div>
+    
+</header>
+
+    <div class="document">
+        <div class="page-content" role="main">
+        
+  <div class="section" id="stochastic-gradient-descent">
+<span id="sec-sgd"></span><h1><span class="section-number">12.4. </span>Stochastic Gradient Descent<a class="headerlink" href="#stochastic-gradient-descent" title="Permalink to this heading">¶</a><div class="d2l-tabs" style="float:right"><div class="d2l-tabs__tab"><a href="https://colab.research.google.com/github/d2l-ai/d2l-pytorch-colab/blob/master/chapter_optimization/sgd.ipynb" onclick="captureOutboundLink('https://colab.research.google.com/github/d2l-ai/d2l-pytorch-colab/blob/master/chapter_optimization/sgd.ipynb'); return false;"> <button style="float:right", id="Colab_[pytorch]" class="mdl-button mdl-js-button mdl-button--primary mdl-js-ripple-effect"> <i class=" fas fa-external-link-alt"></i> Colab [pytorch] </button></a><div class="mdl-tooltip" data-mdl-for="Colab_[pytorch]"> Open the notebook in Colab</div></div><div class="d2l-tabs__tab"><a href="https://colab.research.google.com/github/d2l-ai/d2l-en-colab/blob/master/chapter_optimization/sgd.ipynb" onclick="captureOutboundLink('https://colab.research.google.com/github/d2l-ai/d2l-en-colab/blob/master/chapter_optimization/sgd.ipynb'); return false;"> <button style="float:right", id="Colab_[mxnet]" class="mdl-button mdl-js-button mdl-button--primary mdl-js-ripple-effect"> <i class=" fas fa-external-link-alt"></i> Colab [mxnet] </button></a><div class="mdl-tooltip" data-mdl-for="Colab_[mxnet]"> Open the notebook in Colab</div></div><div class="d2l-tabs__tab"><a href="https://colab.research.google.com/github/d2l-ai/d2l-jax-colab/blob/master/chapter_optimization/sgd.ipynb" onclick="captureOutboundLink('https://colab.research.google.com/github/d2l-ai/d2l-jax-colab/blob/master/chapter_optimization/sgd.ipynb'); return false;"> <button style="float:right", id="Colab_[jax]" class="mdl-button mdl-js-button mdl-button--primary mdl-js-ripple-effect"> <i class=" fas fa-external-link-alt"></i> Colab [jax] </button></a><div class="mdl-tooltip" data-mdl-for="Colab_[jax]"> Open the notebook in Colab</div></div><div class="d2l-tabs__tab"><a href="https://colab.research.google.com/github/d2l-ai/d2l-tensorflow-colab/blob/master/chapter_optimization/sgd.ipynb" onclick="captureOutboundLink('https://colab.research.google.com/github/d2l-ai/d2l-tensorflow-colab/blob/master/chapter_optimization/sgd.ipynb'); return false;"> <button style="float:right", id="Colab_[tensorflow]" class="mdl-button mdl-js-button mdl-button--primary mdl-js-ripple-effect"> <i class=" fas fa-external-link-alt"></i> Colab [tensorflow] </button></a><div class="mdl-tooltip" data-mdl-for="Colab_[tensorflow]"> Open the notebook in Colab</div></div></div><a href="https://studiolab.sagemaker.aws/import/github/d2l-ai/d2l-pytorch-sagemaker-studio-lab/blob/main/GettingStarted-D2L.ipynb" onclick="captureOutboundLink('https://studiolab.sagemaker.aws/import/github/d2l-ai/d2l-pytorch-sagemaker-studio-lab/blob/main/GettingStarted-D2L.ipynb'); return false;"> <button style="float:right", id="SageMaker_Studio_Lab" class="mdl-button mdl-js-button mdl-button--primary mdl-js-ripple-effect"> <i class=" fas fa-external-link-alt"></i> SageMaker Studio Lab </button></a><div class="mdl-tooltip" data-mdl-for="SageMaker_Studio_Lab"> Open the notebook in SageMaker Studio Lab</div></h1>
+<p>In earlier chapters we kept using stochastic gradient descent in our
+training procedure, however, without explaining why it works. To shed
+some light on it, we just described the basic principles of gradient
+descent in <a class="reference internal" href="gd.html#sec-gd"><span class="std std-numref">Section 12.3</span></a>. In this section, we go on to discuss
+<em>stochastic gradient descent</em> in greater detail.</p>
+<div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect"><div class="mdl-tabs__tab-bar code"><a href="#pytorch-1-0" onclick="tagClick('pytorch'); return false;" class="mdl-tabs__tab is-active">pytorch</a><a href="#mxnet-1-1" onclick="tagClick('mxnet'); return false;" class="mdl-tabs__tab ">mxnet</a><a href="#tensorflow-1-2" onclick="tagClick('tensorflow'); return false;" class="mdl-tabs__tab ">tensorflow</a></div><div class="mdl-tabs__panel is-active" id="pytorch-1-0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">d2l</span> <span class="kn">import</span> <span class="n">torch</span> <span class="k">as</span> <span class="n">d2l</span>
+</pre></div>
+</div>
+</div><div class="mdl-tabs__panel " id="mxnet-1-1"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">mxnet</span> <span class="kn">import</span> <span class="n">np</span><span class="p">,</span> <span class="n">npx</span>
+<span class="kn">from</span> <span class="nn">d2l</span> <span class="kn">import</span> <span class="n">mxnet</span> <span class="k">as</span> <span class="n">d2l</span>
+
+<span class="n">npx</span><span class="o">.</span><span class="n">set_np</span><span class="p">()</span>
+</pre></div>
+</div>
+</div><div class="mdl-tabs__panel " id="tensorflow-1-2"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">from</span> <span class="nn">d2l</span> <span class="kn">import</span> <span class="n">tensorflow</span> <span class="k">as</span> <span class="n">d2l</span>
+</pre></div>
+</div>
+</div></div><div class="section" id="stochastic-gradient-updates">
+<h2><span class="section-number">12.4.1. </span>Stochastic Gradient Updates<a class="headerlink" href="#stochastic-gradient-updates" title="Permalink to this heading">¶</a></h2>
+<p>In deep learning, the objective function is usually the average of the
+loss functions for each example in the training dataset. Given a
+training dataset of <span class="math notranslate nohighlight">\(n\)</span> examples, we assume that
+<span class="math notranslate nohighlight">\(f_i(\mathbf{x})\)</span> is the loss function with respect to the
+training example of index <span class="math notranslate nohighlight">\(i\)</span>, where <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> is the
+parameter vector. Then we arrive at the objective function</p>
+<div class="math notranslate nohighlight" id="equation-chapter-optimization-sgd-0">
+<span class="eqno">(12.4.1)<a class="headerlink" href="#equation-chapter-optimization-sgd-0" title="Permalink to this equation">¶</a></span>\[f(\mathbf{x}) = \frac{1}{n} \sum_{i = 1}^n f_i(\mathbf{x}).\]</div>
+<p>The gradient of the objective function at <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> is computed
+as</p>
+<div class="math notranslate nohighlight" id="equation-chapter-optimization-sgd-1">
+<span class="eqno">(12.4.2)<a class="headerlink" href="#equation-chapter-optimization-sgd-1" title="Permalink to this equation">¶</a></span>\[\nabla f(\mathbf{x}) = \frac{1}{n} \sum_{i = 1}^n \nabla f_i(\mathbf{x}).\]</div>
+<p>If gradient descent is used, the computational cost for each independent
+variable iteration is <span class="math notranslate nohighlight">\(\mathcal{O}(n)\)</span>, which grows linearly with
+<span class="math notranslate nohighlight">\(n\)</span>. Therefore, when the training dataset is larger, the cost of
+gradient descent for each iteration will be higher.</p>
+<p>Stochastic gradient descent (SGD) reduces computational cost at each
+iteration. At each iteration of stochastic gradient descent, we
+uniformly sample an index <span class="math notranslate nohighlight">\(i\in\{1,\ldots, n\}\)</span> for data examples
+at random, and compute the gradient <span class="math notranslate nohighlight">\(\nabla f_i(\mathbf{x})\)</span> to
+update <span class="math notranslate nohighlight">\(\mathbf{x}\)</span>:</p>
+<div class="math notranslate nohighlight" id="equation-chapter-optimization-sgd-2">
+<span class="eqno">(12.4.3)<a class="headerlink" href="#equation-chapter-optimization-sgd-2" title="Permalink to this equation">¶</a></span>\[\mathbf{x} \leftarrow \mathbf{x} - \eta \nabla f_i(\mathbf{x}),\]</div>
+<p>where <span class="math notranslate nohighlight">\(\eta\)</span> is the learning rate. We can see that the
+computational cost for each iteration drops from <span class="math notranslate nohighlight">\(\mathcal{O}(n)\)</span>
+of the gradient descent to the constant <span class="math notranslate nohighlight">\(\mathcal{O}(1)\)</span>.
+Moreover, we want to emphasize that the stochastic gradient
+<span class="math notranslate nohighlight">\(\nabla f_i(\mathbf{x})\)</span> is an unbiased estimate of the full
+gradient <span class="math notranslate nohighlight">\(\nabla f(\mathbf{x})\)</span> because</p>
+<div class="math notranslate nohighlight" id="equation-chapter-optimization-sgd-3">
+<span class="eqno">(12.4.4)<a class="headerlink" href="#equation-chapter-optimization-sgd-3" title="Permalink to this equation">¶</a></span>\[\mathbb{E}_i \nabla f_i(\mathbf{x}) = \frac{1}{n} \sum_{i = 1}^n \nabla f_i(\mathbf{x}) = \nabla f(\mathbf{x}).\]</div>
+<p>This means that, on average, the stochastic gradient is a good estimate
+of the gradient.</p>
+<p>Now, we will compare it with gradient descent by adding random noise
+with a mean of 0 and a variance of 1 to the gradient to simulate a
+stochastic gradient descent.</p>
+<div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect"><div class="mdl-tabs__tab-bar code"><a href="#pytorch-3-0" onclick="tagClick('pytorch'); return false;" class="mdl-tabs__tab is-active">pytorch</a><a href="#mxnet-3-1" onclick="tagClick('mxnet'); return false;" class="mdl-tabs__tab ">mxnet</a><a href="#tensorflow-3-2" onclick="tagClick('tensorflow'); return false;" class="mdl-tabs__tab ">tensorflow</a></div><div class="mdl-tabs__panel is-active" id="pytorch-3-0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>  <span class="c1"># Objective function</span>
+    <span class="k">return</span> <span class="n">x1</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x2</span> <span class="o">**</span> <span class="mi">2</span>
+
+<span class="k">def</span> <span class="nf">f_grad</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>  <span class="c1"># Gradient of the objective function</span>
+    <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x1</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">x2</span>
+
+<span class="k">def</span> <span class="nf">sgd</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="n">f_grad</span><span class="p">):</span>
+    <span class="n">g1</span><span class="p">,</span> <span class="n">g2</span> <span class="o">=</span> <span class="n">f_grad</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+    <span class="c1"># Simulate noisy gradient</span>
+    <span class="n">g1</span> <span class="o">+=</span> <span class="n">torch</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,))</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+    <span class="n">g2</span> <span class="o">+=</span> <span class="n">torch</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,))</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+    <span class="n">eta_t</span> <span class="o">=</span> <span class="n">eta</span> <span class="o">*</span> <span class="n">lr</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">eta_t</span> <span class="o">*</span> <span class="n">g1</span><span class="p">,</span> <span class="n">x2</span> <span class="o">-</span> <span class="n">eta_t</span> <span class="o">*</span> <span class="n">g2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">constant_lr</span><span class="p">():</span>
+    <span class="k">return</span> <span class="mi">1</span>
+
+<span class="n">eta</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">lr</span> <span class="o">=</span> <span class="n">constant_lr</span>  <span class="c1"># Constant learning rate</span>
+<span class="n">d2l</span><span class="o">.</span><span class="n">show_trace_2d</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">d2l</span><span class="o">.</span><span class="n">train_2d</span><span class="p">(</span><span class="n">sgd</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">f_grad</span><span class="o">=</span><span class="n">f_grad</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="output highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">epoch</span> <span class="mi">50</span><span class="p">,</span> <span class="n">x1</span><span class="p">:</span> <span class="mf">0.225517</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.076646</span>
+</pre></div>
+</div>
+<div class="figure align-default">
+<img alt="../_images/output_sgd_baca77_15_1.svg" src="../_images/output_sgd_baca77_15_1.svg" /></div>
+</div><div class="mdl-tabs__panel " id="mxnet-3-1"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>  <span class="c1"># Objective function</span>
+    <span class="k">return</span> <span class="n">x1</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x2</span> <span class="o">**</span> <span class="mi">2</span>
+
+<span class="k">def</span> <span class="nf">f_grad</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>  <span class="c1"># Gradient of the objective function</span>
+    <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x1</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">x2</span>
+
+<span class="k">def</span> <span class="nf">sgd</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="n">f_grad</span><span class="p">):</span>
+    <span class="n">g1</span><span class="p">,</span> <span class="n">g2</span> <span class="o">=</span> <span class="n">f_grad</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+    <span class="c1"># Simulate noisy gradient</span>
+    <span class="n">g1</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,))</span>
+    <span class="n">g2</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,))</span>
+    <span class="n">eta_t</span> <span class="o">=</span> <span class="n">eta</span> <span class="o">*</span> <span class="n">lr</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">eta_t</span> <span class="o">*</span> <span class="n">g1</span><span class="p">,</span> <span class="n">x2</span> <span class="o">-</span> <span class="n">eta_t</span> <span class="o">*</span> <span class="n">g2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">constant_lr</span><span class="p">():</span>
+    <span class="k">return</span> <span class="mi">1</span>
+
+<span class="n">eta</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">lr</span> <span class="o">=</span> <span class="n">constant_lr</span>  <span class="c1"># Constant learning rate</span>
+<span class="n">d2l</span><span class="o">.</span><span class="n">show_trace_2d</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">d2l</span><span class="o">.</span><span class="n">train_2d</span><span class="p">(</span><span class="n">sgd</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">f_grad</span><span class="o">=</span><span class="n">f_grad</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="output highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">22</span><span class="p">:</span><span class="mi">10</span><span class="p">:</span><span class="mi">25</span><span class="p">]</span> <span class="o">../</span><span class="n">src</span><span class="o">/</span><span class="n">storage</span><span class="o">/</span><span class="n">storage</span><span class="o">.</span><span class="n">cc</span><span class="p">:</span><span class="mi">196</span><span class="p">:</span> <span class="n">Using</span> <span class="n">Pooled</span> <span class="p">(</span><span class="n">Naive</span><span class="p">)</span> <span class="n">StorageManager</span> <span class="k">for</span> <span class="n">CPU</span>
+<span class="n">epoch</span> <span class="mi">50</span><span class="p">,</span> <span class="n">x1</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.472513</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="mf">0.110780</span>
+</pre></div>
+</div>
+<div class="figure align-default">
+<img alt="../_images/output_sgd_baca77_18_1.svg" src="../_images/output_sgd_baca77_18_1.svg" /></div>
+</div><div class="mdl-tabs__panel " id="tensorflow-3-2"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>  <span class="c1"># Objective function</span>
+    <span class="k">return</span> <span class="n">x1</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x2</span> <span class="o">**</span> <span class="mi">2</span>
+
+<span class="k">def</span> <span class="nf">f_grad</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>  <span class="c1"># Gradient of the objective function</span>
+    <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x1</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">x2</span>
+
+<span class="k">def</span> <span class="nf">sgd</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="n">f_grad</span><span class="p">):</span>
+    <span class="n">g1</span><span class="p">,</span> <span class="n">g2</span> <span class="o">=</span> <span class="n">f_grad</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+    <span class="c1"># Simulate noisy gradient</span>
+    <span class="n">g1</span> <span class="o">+=</span> <span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">([</span><span class="mi">1</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">g2</span> <span class="o">+=</span> <span class="n">tf</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">([</span><span class="mi">1</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">eta_t</span> <span class="o">=</span> <span class="n">eta</span> <span class="o">*</span> <span class="n">lr</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">eta_t</span> <span class="o">*</span> <span class="n">g1</span><span class="p">,</span> <span class="n">x2</span> <span class="o">-</span> <span class="n">eta_t</span> <span class="o">*</span> <span class="n">g2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">constant_lr</span><span class="p">():</span>
+    <span class="k">return</span> <span class="mi">1</span>
+
+<span class="n">eta</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">lr</span> <span class="o">=</span> <span class="n">constant_lr</span>  <span class="c1"># Constant learning rate</span>
+<span class="n">d2l</span><span class="o">.</span><span class="n">show_trace_2d</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">d2l</span><span class="o">.</span><span class="n">train_2d</span><span class="p">(</span><span class="n">sgd</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">f_grad</span><span class="o">=</span><span class="n">f_grad</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="output highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">epoch</span> <span class="mi">50</span><span class="p">,</span> <span class="n">x1</span><span class="p">:</span> <span class="mf">0.228397</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.078016</span>
+</pre></div>
+</div>
+<div class="figure align-default">
+<img alt="../_images/output_sgd_baca77_21_1.svg" src="../_images/output_sgd_baca77_21_1.svg" /></div>
+</div></div><p>As we can see, the trajectory of the variables in the stochastic
+gradient descent is much more noisy than the one we observed in gradient
+descent in <a class="reference internal" href="gd.html#sec-gd"><span class="std std-numref">Section 12.3</span></a>. This is due to the stochastic nature of
+the gradient. That is, even when we arrive near the minimum, we are
+still subject to the uncertainty injected by the instantaneous gradient
+via <span class="math notranslate nohighlight">\(\eta \nabla f_i(\mathbf{x})\)</span>. Even after 50 steps the quality
+is still not so good. Even worse, it will not improve after additional
+steps (we encourage you to experiment with a larger number of steps to
+confirm this). This leaves us with the only alternative: change the
+learning rate <span class="math notranslate nohighlight">\(\eta\)</span>. However, if we pick this too small, we will
+not make any meaningful progress initially. On the other hand, if we
+pick it too large, we will not get a good solution, as seen above. The
+only way to resolve these conflicting goals is to reduce the learning
+rate <em>dynamically</em> as optimization progresses.</p>
+<p>This is also the reason for adding a learning rate function <code class="docutils literal notranslate"><span class="pre">lr</span></code> into
+the <code class="docutils literal notranslate"><span class="pre">sgd</span></code> step function. In the example above any functionality for
+learning rate scheduling lies dormant as we set the associated <code class="docutils literal notranslate"><span class="pre">lr</span></code>
+function to be constant.</p>
+</div>
+<div class="section" id="dynamic-learning-rate">
+<h2><span class="section-number">12.4.2. </span>Dynamic Learning Rate<a class="headerlink" href="#dynamic-learning-rate" title="Permalink to this heading">¶</a></h2>
+<p>Replacing <span class="math notranslate nohighlight">\(\eta\)</span> with a time-dependent learning rate
+<span class="math notranslate nohighlight">\(\eta(t)\)</span> adds to the complexity of controlling convergence of an
+optimization algorithm. In particular, we need to figure out how rapidly
+<span class="math notranslate nohighlight">\(\eta\)</span> should decay. If it is too quick, we will stop optimizing
+prematurely. If we decrease it too slowly, we waste too much time on
+optimization. The following are a few basic strategies that are used in
+adjusting <span class="math notranslate nohighlight">\(\eta\)</span> over time (we will discuss more advanced
+strategies later):</p>
+<div class="math notranslate nohighlight" id="equation-chapter-optimization-sgd-4">
+<span class="eqno">(12.4.5)<a class="headerlink" href="#equation-chapter-optimization-sgd-4" title="Permalink to this equation">¶</a></span>\[\begin{split}\begin{aligned}
+    \eta(t) &amp; = \eta_i \textrm{ if } t_i \leq t \leq t_{i+1}  &amp;&amp; \textrm{piecewise constant} \\
+    \eta(t) &amp; = \eta_0 \cdot e^{-\lambda t} &amp;&amp; \textrm{exponential decay} \\
+    \eta(t) &amp; = \eta_0 \cdot (\beta t + 1)^{-\alpha} &amp;&amp; \textrm{polynomial decay}
+\end{aligned}\end{split}\]</div>
+<p>In the first <em>piecewise constant</em> scenario we decrease the learning
+rate, e.g., whenever progress in optimization stalls. This is a common
+strategy for training deep networks. Alternatively we could decrease it
+much more aggressively by an <em>exponential decay</em>. Unfortunately this
+often leads to premature stopping before the algorithm has converged. A
+popular choice is <em>polynomial decay</em> with <span class="math notranslate nohighlight">\(\alpha = 0.5\)</span>. In the
+case of convex optimization there are a number of proofs that show that
+this rate is well behaved.</p>
+<p>Let’s see what the exponential decay looks like in practice.</p>
+<div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect"><div class="mdl-tabs__tab-bar code"><a href="#pytorch-5-0" onclick="tagClick('pytorch'); return false;" class="mdl-tabs__tab is-active">pytorch</a><a href="#mxnet-5-1" onclick="tagClick('mxnet'); return false;" class="mdl-tabs__tab ">mxnet</a><a href="#tensorflow-5-2" onclick="tagClick('tensorflow'); return false;" class="mdl-tabs__tab ">tensorflow</a></div><div class="mdl-tabs__panel is-active" id="pytorch-5-0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">exponential_lr</span><span class="p">():</span>
+    <span class="c1"># Global variable that is defined outside this function and updated inside</span>
+    <span class="k">global</span> <span class="n">t</span>
+    <span class="n">t</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">lr</span> <span class="o">=</span> <span class="n">exponential_lr</span>
+<span class="n">d2l</span><span class="o">.</span><span class="n">show_trace_2d</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">d2l</span><span class="o">.</span><span class="n">train_2d</span><span class="p">(</span><span class="n">sgd</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">f_grad</span><span class="o">=</span><span class="n">f_grad</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="output highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">epoch</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">x1</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.758829</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.115584</span>
+</pre></div>
+</div>
+<div class="figure align-default">
+<img alt="../_images/output_sgd_baca77_27_1.svg" src="../_images/output_sgd_baca77_27_1.svg" /></div>
+</div><div class="mdl-tabs__panel " id="mxnet-5-1"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">exponential_lr</span><span class="p">():</span>
+    <span class="c1"># Global variable that is defined outside this function and updated inside</span>
+    <span class="k">global</span> <span class="n">t</span>
+    <span class="n">t</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">lr</span> <span class="o">=</span> <span class="n">exponential_lr</span>
+<span class="n">d2l</span><span class="o">.</span><span class="n">show_trace_2d</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">d2l</span><span class="o">.</span><span class="n">train_2d</span><span class="p">(</span><span class="n">sgd</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">f_grad</span><span class="o">=</span><span class="n">f_grad</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="output highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">epoch</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">x1</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.820458</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="mf">0.004701</span>
+</pre></div>
+</div>
+<div class="figure align-default">
+<img alt="../_images/output_sgd_baca77_30_1.svg" src="../_images/output_sgd_baca77_30_1.svg" /></div>
+</div><div class="mdl-tabs__panel " id="tensorflow-5-2"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">exponential_lr</span><span class="p">():</span>
+    <span class="c1"># Global variable that is defined outside this function and updated inside</span>
+    <span class="k">global</span> <span class="n">t</span>
+    <span class="n">t</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">lr</span> <span class="o">=</span> <span class="n">exponential_lr</span>
+<span class="n">d2l</span><span class="o">.</span><span class="n">show_trace_2d</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">d2l</span><span class="o">.</span><span class="n">train_2d</span><span class="p">(</span><span class="n">sgd</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">f_grad</span><span class="o">=</span><span class="n">f_grad</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="output highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">epoch</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">x1</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.874313</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.046612</span>
+</pre></div>
+</div>
+<div class="figure align-default">
+<img alt="../_images/output_sgd_baca77_33_1.svg" src="../_images/output_sgd_baca77_33_1.svg" /></div>
+</div></div><p>As expected, the variance in the parameters is significantly reduced.
+However, this comes at the expense of failing to converge to the optimal
+solution <span class="math notranslate nohighlight">\(\mathbf{x} = (0, 0)\)</span>. Even after 1000 iteration steps
+are we are still very far away from the optimal solution. Indeed, the
+algorithm fails to converge at all. On the other hand, if we use a
+polynomial decay where the learning rate decays with the inverse square
+root of the number of steps, convergence gets better after only 50
+steps.</p>
+<div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect"><div class="mdl-tabs__tab-bar code"><a href="#pytorch-7-0" onclick="tagClick('pytorch'); return false;" class="mdl-tabs__tab is-active">pytorch</a><a href="#mxnet-7-1" onclick="tagClick('mxnet'); return false;" class="mdl-tabs__tab ">mxnet</a><a href="#tensorflow-7-2" onclick="tagClick('tensorflow'); return false;" class="mdl-tabs__tab ">tensorflow</a></div><div class="mdl-tabs__panel is-active" id="pytorch-7-0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">polynomial_lr</span><span class="p">():</span>
+    <span class="c1"># Global variable that is defined outside this function and updated inside</span>
+    <span class="k">global</span> <span class="n">t</span>
+    <span class="n">t</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">lr</span> <span class="o">=</span> <span class="n">polynomial_lr</span>
+<span class="n">d2l</span><span class="o">.</span><span class="n">show_trace_2d</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">d2l</span><span class="o">.</span><span class="n">train_2d</span><span class="p">(</span><span class="n">sgd</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">f_grad</span><span class="o">=</span><span class="n">f_grad</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="output highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">epoch</span> <span class="mi">50</span><span class="p">,</span> <span class="n">x1</span><span class="p">:</span> <span class="mf">0.144834</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="mf">0.041688</span>
+</pre></div>
+</div>
+<div class="figure align-default">
+<img alt="../_images/output_sgd_baca77_39_1.svg" src="../_images/output_sgd_baca77_39_1.svg" /></div>
+</div><div class="mdl-tabs__panel " id="mxnet-7-1"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">polynomial_lr</span><span class="p">():</span>
+    <span class="c1"># Global variable that is defined outside this function and updated inside</span>
+    <span class="k">global</span> <span class="n">t</span>
+    <span class="n">t</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">lr</span> <span class="o">=</span> <span class="n">polynomial_lr</span>
+<span class="n">d2l</span><span class="o">.</span><span class="n">show_trace_2d</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">d2l</span><span class="o">.</span><span class="n">train_2d</span><span class="p">(</span><span class="n">sgd</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">f_grad</span><span class="o">=</span><span class="n">f_grad</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="output highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">epoch</span> <span class="mi">50</span><span class="p">,</span> <span class="n">x1</span><span class="p">:</span> <span class="mf">0.025029</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="mf">0.115820</span>
+</pre></div>
+</div>
+<div class="figure align-default">
+<img alt="../_images/output_sgd_baca77_42_1.svg" src="../_images/output_sgd_baca77_42_1.svg" /></div>
+</div><div class="mdl-tabs__panel " id="tensorflow-7-2"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">polynomial_lr</span><span class="p">():</span>
+    <span class="c1"># Global variable that is defined outside this function and updated inside</span>
+    <span class="k">global</span> <span class="n">t</span>
+    <span class="n">t</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">lr</span> <span class="o">=</span> <span class="n">polynomial_lr</span>
+<span class="n">d2l</span><span class="o">.</span><span class="n">show_trace_2d</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">d2l</span><span class="o">.</span><span class="n">train_2d</span><span class="p">(</span><span class="n">sgd</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">f_grad</span><span class="o">=</span><span class="n">f_grad</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="output highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">epoch</span> <span class="mi">50</span><span class="p">,</span> <span class="n">x1</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.061363</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.130460</span>
+</pre></div>
+</div>
+<div class="figure align-default">
+<img alt="../_images/output_sgd_baca77_45_1.svg" src="../_images/output_sgd_baca77_45_1.svg" /></div>
+</div></div><p>There exist many more choices for how to set the learning rate. For
+instance, we could start with a small rate, then rapidly ramp up and
+then decrease it again, albeit more slowly. We could even alternate
+between smaller and larger learning rates. There exists a large variety
+of such schedules. For now let’s focus on learning rate schedules for
+which a comprehensive theoretical analysis is possible, i.e., on
+learning rates in a convex setting. For general nonconvex problems it is
+very difficult to obtain meaningful convergence guarantees, since in
+general minimizing nonlinear nonconvex problems is NP hard. For a survey
+see e.g., the excellent <a class="reference external" href="https://www.stat.cmu.edu/%7Eryantibs/convexopt-F15/lectures/26-nonconvex.pdf">lecture
+notes</a>
+of Tibshirani 2015.</p>
+</div>
+<div class="section" id="convergence-analysis-for-convex-objectives">
+<h2><span class="section-number">12.4.3. </span>Convergence Analysis for Convex Objectives<a class="headerlink" href="#convergence-analysis-for-convex-objectives" title="Permalink to this heading">¶</a></h2>
+<p>The following convergence analysis of stochastic gradient descent for
+convex objective functions is optional and primarily serves to convey
+more intuition about the problem. We limit ourselves to one of the
+simplest proofs <span id="id1">(<a class="reference internal" href="../chapter_references/zreferences.html#id204" title="Nesterov, Y., &amp; Vial, J.-P. (2000). Confidence level solutions for stochastic programming. Automatica, 44(6), 1559–1568.">Nesterov and Vial, 2000</a>)</span>. Significantly more
+advanced proof techniques exist, e.g., whenever the objective function
+is particularly well behaved.</p>
+<p>Suppose that the objective function
+<span class="math notranslate nohighlight">\(f(\boldsymbol{\xi}, \mathbf{x})\)</span> is convex in <span class="math notranslate nohighlight">\(\mathbf{x}\)</span>
+for all <span class="math notranslate nohighlight">\(\boldsymbol{\xi}\)</span>. More concretely, we consider the
+stochastic gradient descent update:</p>
+<div class="math notranslate nohighlight" id="equation-chapter-optimization-sgd-5">
+<span class="eqno">(12.4.6)<a class="headerlink" href="#equation-chapter-optimization-sgd-5" title="Permalink to this equation">¶</a></span>\[\mathbf{x}_{t+1} = \mathbf{x}_{t} - \eta_t \partial_\mathbf{x} f(\boldsymbol{\xi}_t, \mathbf{x}),\]</div>
+<p>where <span class="math notranslate nohighlight">\(f(\boldsymbol{\xi}_t, \mathbf{x})\)</span> is the objective
+function with respect to the training example <span class="math notranslate nohighlight">\(\boldsymbol{\xi}_t\)</span>
+drawn from some distribution at step <span class="math notranslate nohighlight">\(t\)</span> and <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> is
+the model parameter. Denote by</p>
+<div class="math notranslate nohighlight" id="equation-chapter-optimization-sgd-6">
+<span class="eqno">(12.4.7)<a class="headerlink" href="#equation-chapter-optimization-sgd-6" title="Permalink to this equation">¶</a></span>\[R(\mathbf{x}) = E_{\boldsymbol{\xi}}[f(\boldsymbol{\xi}, \mathbf{x})]\]</div>
+<p>the expected risk and by <span class="math notranslate nohighlight">\(R^*\)</span> its minimum with regard to
+<span class="math notranslate nohighlight">\(\mathbf{x}\)</span>. Last let <span class="math notranslate nohighlight">\(\mathbf{x}^*\)</span> be the minimizer (we
+assume that it exists within the domain where <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> is
+defined). In this case we can track the distance between the current
+parameter <span class="math notranslate nohighlight">\(\mathbf{x}_t\)</span> at time <span class="math notranslate nohighlight">\(t\)</span> and the risk minimizer
+<span class="math notranslate nohighlight">\(\mathbf{x}^*\)</span> and see whether it improves over time:</p>
+<div class="math notranslate nohighlight" id="equation-eq-sgd-xt-1-xstar">
+<span class="eqno">(12.4.8)<a class="headerlink" href="#equation-eq-sgd-xt-1-xstar" title="Permalink to this equation">¶</a></span>\[\begin{split}\begin{aligned}    &amp;\|\mathbf{x}_{t+1} - \mathbf{x}^*\|^2 \\ =&amp; \|\mathbf{x}_{t} - \eta_t \partial_\mathbf{x} f(\boldsymbol{\xi}_t, \mathbf{x}) - \mathbf{x}^*\|^2 \\    =&amp; \|\mathbf{x}_{t} - \mathbf{x}^*\|^2 + \eta_t^2 \|\partial_\mathbf{x} f(\boldsymbol{\xi}_t, \mathbf{x})\|^2 - 2 \eta_t    \left\langle \mathbf{x}_t - \mathbf{x}^*, \partial_\mathbf{x} f(\boldsymbol{\xi}_t, \mathbf{x})\right\rangle.   \end{aligned}\end{split}\]</div>
+<p>We assume that the <span class="math notranslate nohighlight">\(\ell_2\)</span> norm of stochastic gradient
+<span class="math notranslate nohighlight">\(\partial_\mathbf{x} f(\boldsymbol{\xi}_t, \mathbf{x})\)</span> is bounded
+by some constant <span class="math notranslate nohighlight">\(L\)</span>, hence we have that</p>
+<div class="math notranslate nohighlight" id="equation-eq-sgd-l">
+<span class="eqno">(12.4.9)<a class="headerlink" href="#equation-eq-sgd-l" title="Permalink to this equation">¶</a></span>\[\eta_t^2 \|\partial_\mathbf{x} f(\boldsymbol{\xi}_t, \mathbf{x})\|^2 \leq \eta_t^2 L^2.\]</div>
+<p>We are mostly interested in how the distance between
+<span class="math notranslate nohighlight">\(\mathbf{x}_t\)</span> and <span class="math notranslate nohighlight">\(\mathbf{x}^*\)</span> changes <em>in expectation</em>.
+In fact, for any specific sequence of steps the distance might well
+increase, depending on whichever <span class="math notranslate nohighlight">\(\boldsymbol{\xi}_t\)</span> we
+encounter. Hence we need to bound the dot product. Since for any convex
+function <span class="math notranslate nohighlight">\(f\)</span> it holds that
+<span class="math notranslate nohighlight">\(f(\mathbf{y}) \geq f(\mathbf{x}) + \langle f'(\mathbf{x}), \mathbf{y} - \mathbf{x} \rangle\)</span>
+for all <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{y}\)</span>, by convexity we have</p>
+<div class="math notranslate nohighlight" id="equation-eq-sgd-f-xi-xstar">
+<span class="eqno">(12.4.10)<a class="headerlink" href="#equation-eq-sgd-f-xi-xstar" title="Permalink to this equation">¶</a></span>\[f(\boldsymbol{\xi}_t, \mathbf{x}^*) \geq f(\boldsymbol{\xi}_t, \mathbf{x}_t) + \left\langle \mathbf{x}^* - \mathbf{x}_t, \partial_{\mathbf{x}} f(\boldsymbol{\xi}_t, \mathbf{x}_t) \right\rangle.\]</div>
+<p>Plugging both inequalities <a class="reference internal" href="#equation-eq-sgd-l">(12.4.9)</a> and
+<a class="reference internal" href="#equation-eq-sgd-f-xi-xstar">(12.4.10)</a> into <a class="reference internal" href="#equation-eq-sgd-xt-1-xstar">(12.4.8)</a> we obtain
+a bound on the distance between parameters at time <span class="math notranslate nohighlight">\(t+1\)</span> as
+follows:</p>
+<div class="math notranslate nohighlight" id="equation-eqref-sgd-xt-diff">
+<span class="eqno">(12.4.11)<a class="headerlink" href="#equation-eqref-sgd-xt-diff" title="Permalink to this equation">¶</a></span>\[\|\mathbf{x}_{t} - \mathbf{x}^*\|^2 - \|\mathbf{x}_{t+1} - \mathbf{x}^*\|^2 \geq 2 \eta_t (f(\boldsymbol{\xi}_t, \mathbf{x}_t) - f(\boldsymbol{\xi}_t, \mathbf{x}^*)) - \eta_t^2 L^2.\]</div>
+<p>This means that we make progress as long as the difference between
+current loss and the optimal loss outweighs <span class="math notranslate nohighlight">\(\eta_t L^2/2\)</span>. Since
+this difference is bound to converge to zero it follows that the
+learning rate <span class="math notranslate nohighlight">\(\eta_t\)</span> also needs to <em>vanish</em>.</p>
+<p>Next we take expectations over <a class="reference internal" href="#equation-eqref-sgd-xt-diff">(12.4.11)</a>. This yields</p>
+<div class="math notranslate nohighlight" id="equation-chapter-optimization-sgd-7">
+<span class="eqno">(12.4.12)<a class="headerlink" href="#equation-chapter-optimization-sgd-7" title="Permalink to this equation">¶</a></span>\[E\left[\|\mathbf{x}_{t} - \mathbf{x}^*\|^2\right] - E\left[\|\mathbf{x}_{t+1} - \mathbf{x}^*\|^2\right] \geq 2 \eta_t [E[R(\mathbf{x}_t)] - R^*] -  \eta_t^2 L^2.\]</div>
+<p>The last step involves summing over the inequalities for
+<span class="math notranslate nohighlight">\(t \in \{1, \ldots, T\}\)</span>. Since the sum telescopes and by dropping
+the lower term we obtain</p>
+<div class="math notranslate nohighlight" id="equation-eq-sgd-x1-xstar">
+<span class="eqno">(12.4.13)<a class="headerlink" href="#equation-eq-sgd-x1-xstar" title="Permalink to this equation">¶</a></span>\[\|\mathbf{x}_1 - \mathbf{x}^*\|^2 \geq 2 \left (\sum_{t=1}^T   \eta_t \right) [E[R(\mathbf{x}_t)] - R^*] - L^2 \sum_{t=1}^T \eta_t^2.\]</div>
+<p>Note that we exploited that <span class="math notranslate nohighlight">\(\mathbf{x}_1\)</span> is given and thus the
+expectation can be dropped. Last define</p>
+<div class="math notranslate nohighlight" id="equation-chapter-optimization-sgd-8">
+<span class="eqno">(12.4.14)<a class="headerlink" href="#equation-chapter-optimization-sgd-8" title="Permalink to this equation">¶</a></span>\[\bar{\mathbf{x}} \stackrel{\textrm{def}}{=} \frac{\sum_{t=1}^T \eta_t \mathbf{x}_t}{\sum_{t=1}^T \eta_t}.\]</div>
+<p>Since</p>
+<div class="math notranslate nohighlight" id="equation-chapter-optimization-sgd-9">
+<span class="eqno">(12.4.15)<a class="headerlink" href="#equation-chapter-optimization-sgd-9" title="Permalink to this equation">¶</a></span>\[E\left(\frac{\sum_{t=1}^T \eta_t R(\mathbf{x}_t)}{\sum_{t=1}^T \eta_t}\right) = \frac{\sum_{t=1}^T \eta_t E[R(\mathbf{x}_t)]}{\sum_{t=1}^T \eta_t} = E[R(\mathbf{x}_t)],\]</div>
+<p>by Jensen’s inequality (setting <span class="math notranslate nohighlight">\(i=t\)</span>,
+<span class="math notranslate nohighlight">\(\alpha_i = \eta_t/\sum_{t=1}^T \eta_t\)</span> in
+<a class="reference internal" href="convexity.html#equation-eq-jensens-inequality">(12.2.3)</a>) and convexity of <span class="math notranslate nohighlight">\(R\)</span> it follows
+that <span class="math notranslate nohighlight">\(E[R(\mathbf{x}_t)] \geq E[R(\bar{\mathbf{x}})]\)</span>, thus</p>
+<div class="math notranslate nohighlight" id="equation-chapter-optimization-sgd-10">
+<span class="eqno">(12.4.16)<a class="headerlink" href="#equation-chapter-optimization-sgd-10" title="Permalink to this equation">¶</a></span>\[\sum_{t=1}^T \eta_t E[R(\mathbf{x}_t)] \geq \sum_{t=1}^T \eta_t  E\left[R(\bar{\mathbf{x}})\right].\]</div>
+<p>Plugging this into the inequality <a class="reference internal" href="#equation-eq-sgd-x1-xstar">(12.4.13)</a> yields the
+bound</p>
+<div class="math notranslate nohighlight" id="equation-chapter-optimization-sgd-11">
+<span class="eqno">(12.4.17)<a class="headerlink" href="#equation-chapter-optimization-sgd-11" title="Permalink to this equation">¶</a></span>\[\left[E[\bar{\mathbf{x}}]\right] - R^* \leq \frac{r^2 + L^2 \sum_{t=1}^T \eta_t^2}{2 \sum_{t=1}^T \eta_t},\]</div>
+<p>where
+<span class="math notranslate nohighlight">\(r^2 \stackrel{\textrm{def}}{=} \|\mathbf{x}_1 - \mathbf{x}^*\|^2\)</span>
+is a bound on the distance between the initial choice of parameters and
+the final outcome. In short, the speed of convergence depends on how the
+norm of stochastic gradient is bounded (<span class="math notranslate nohighlight">\(L\)</span>) and how far away from
+optimality the initial parameter value is (<span class="math notranslate nohighlight">\(r\)</span>). Note that the
+bound is in terms of <span class="math notranslate nohighlight">\(\bar{\mathbf{x}}\)</span> rather than
+<span class="math notranslate nohighlight">\(\mathbf{x}_T\)</span>. This is the case since <span class="math notranslate nohighlight">\(\bar{\mathbf{x}}\)</span> is
+a smoothed version of the optimization path. Whenever <span class="math notranslate nohighlight">\(r, L\)</span>, and
+<span class="math notranslate nohighlight">\(T\)</span> are known we can pick the learning rate
+<span class="math notranslate nohighlight">\(\eta = r/(L \sqrt{T})\)</span>. This yields as upper bound
+<span class="math notranslate nohighlight">\(rL/\sqrt{T}\)</span>. That is, we converge with rate
+<span class="math notranslate nohighlight">\(\mathcal{O}(1/\sqrt{T})\)</span> to the optimal solution.</p>
+</div>
+<div class="section" id="stochastic-gradients-and-finite-samples">
+<h2><span class="section-number">12.4.4. </span>Stochastic Gradients and Finite Samples<a class="headerlink" href="#stochastic-gradients-and-finite-samples" title="Permalink to this heading">¶</a></h2>
+<p>So far we have played a bit fast and loose when it comes to talking
+about stochastic gradient descent. We posited that we draw instances
+<span class="math notranslate nohighlight">\(x_i\)</span>, typically with labels <span class="math notranslate nohighlight">\(y_i\)</span> from some distribution
+<span class="math notranslate nohighlight">\(p(x, y)\)</span> and that we use this to update the model parameters in
+some manner. In particular, for a finite sample size we simply argued
+that the discrete distribution
+<span class="math notranslate nohighlight">\(p(x, y) = \frac{1}{n} \sum_{i=1}^n \delta_{x_i}(x) \delta_{y_i}(y)\)</span>
+for some functions <span class="math notranslate nohighlight">\(\delta_{x_i}\)</span> and <span class="math notranslate nohighlight">\(\delta_{y_i}\)</span> allows
+us to perform stochastic gradient descent over it.</p>
+<p>However, this is not really what we did. In the toy examples in the
+current section we simply added noise to an otherwise non-stochastic
+gradient, i.e., we pretended to have pairs <span class="math notranslate nohighlight">\((x_i, y_i)\)</span>. It turns
+out that this is justified here (see the exercises for a detailed
+discussion). More troubling is that in all previous discussions we
+clearly did not do this. Instead we iterated over all instances <em>exactly
+once</em>. To see why this is preferable consider the converse, namely that
+we are sampling <span class="math notranslate nohighlight">\(n\)</span> observations from the discrete distribution
+<em>with replacement</em>. The probability of choosing an element <span class="math notranslate nohighlight">\(i\)</span> at
+random is <span class="math notranslate nohighlight">\(1/n\)</span>. Thus to choose it <em>at least</em> once is</p>
+<div class="math notranslate nohighlight" id="equation-chapter-optimization-sgd-12">
+<span class="eqno">(12.4.18)<a class="headerlink" href="#equation-chapter-optimization-sgd-12" title="Permalink to this equation">¶</a></span>\[P(\textrm{choose~} i) = 1 - P(\textrm{omit~} i) = 1 - (1-1/n)^n \approx 1-e^{-1} \approx 0.63.\]</div>
+<p>A similar reasoning shows that the probability of picking some sample
+(i.e., training example) <em>exactly once</em> is given by</p>
+<div class="math notranslate nohighlight" id="equation-chapter-optimization-sgd-13">
+<span class="eqno">(12.4.19)<a class="headerlink" href="#equation-chapter-optimization-sgd-13" title="Permalink to this equation">¶</a></span>\[{n \choose 1} \frac{1}{n} \left(1-\frac{1}{n}\right)^{n-1} = \frac{n}{n-1} \left(1-\frac{1}{n}\right)^{n} \approx e^{-1} \approx 0.37.\]</div>
+<p>Sampling with replacement leads to an increased variance and decreased
+data efficiency relative to sampling <em>without replacement</em>. Hence, in
+practice we perform the latter (and this is the default choice
+throughout this book). Last note that repeated passes through the
+training dataset traverse it in a <em>different</em> random order.</p>
+</div>
+<div class="section" id="summary">
+<h2><span class="section-number">12.4.5. </span>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>For convex problems we can prove that for a wide choice of learning
+rates stochastic gradient descent will converge to the optimal
+solution.</p></li>
+<li><p>For deep learning this is generally not the case. However, the
+analysis of convex problems gives us useful insight into how to
+approach optimization, namely to reduce the learning rate
+progressively, albeit not too quickly.</p></li>
+<li><p>Problems occur when the learning rate is too small or too large. In
+practice a suitable learning rate is often found only after multiple
+experiments.</p></li>
+<li><p>When there are more examples in the training dataset, it costs more
+to compute each iteration for gradient descent, so stochastic
+gradient descent is preferred in these cases.</p></li>
+<li><p>Optimality guarantees for stochastic gradient descent are in general
+not available in nonconvex cases since the number of local minima
+that require checking might well be exponential.</p></li>
+</ul>
+</div>
+<div class="section" id="exercises">
+<h2><span class="section-number">12.4.6. </span>Exercises<a class="headerlink" href="#exercises" title="Permalink to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Experiment with different learning rate schedules for stochastic
+gradient descent and with different numbers of iterations. In
+particular, plot the distance from the optimal solution
+<span class="math notranslate nohighlight">\((0, 0)\)</span> as a function of the number of iterations.</p></li>
+<li><p>Prove that for the function <span class="math notranslate nohighlight">\(f(x_1, x_2) = x_1^2 + 2 x_2^2\)</span>
+adding normal noise to the gradient is equivalent to minimizing a
+loss function
+<span class="math notranslate nohighlight">\(f(\mathbf{x}, \mathbf{w}) = (x_1 - w_1)^2 + 2 (x_2 - w_2)^2\)</span>
+where <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> is drawn from a normal distribution.</p></li>
+<li><p>Compare convergence of stochastic gradient descent when you sample
+from <span class="math notranslate nohighlight">\(\{(x_1, y_1), \ldots, (x_n, y_n)\}\)</span> with replacement and
+when you sample without replacement.</p></li>
+<li><p>How would you change the stochastic gradient descent solver if some
+gradient (or rather some coordinate associated with it) was
+consistently larger than all the other gradients?</p></li>
+<li><p>Assume that <span class="math notranslate nohighlight">\(f(x) = x^2 (1 + \sin x)\)</span>. How many local minima
+does <span class="math notranslate nohighlight">\(f\)</span> have? Can you change <span class="math notranslate nohighlight">\(f\)</span> in such a way that to
+minimize it one needs to evaluate all the local minima?</p></li>
+</ol>
+<div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect"><div class="mdl-tabs__tab-bar text"><a href="#pytorch-9-0" onclick="tagClick('pytorch'); return false;" class="mdl-tabs__tab is-active">pytorch</a><a href="#mxnet-9-1" onclick="tagClick('mxnet'); return false;" class="mdl-tabs__tab ">mxnet</a><a href="#tensorflow-9-2" onclick="tagClick('tensorflow'); return false;" class="mdl-tabs__tab ">tensorflow</a></div><div class="mdl-tabs__panel is-active" id="pytorch-9-0"><p><a class="reference external" href="https://discuss.d2l.ai/t/497">Discussions</a></p>
+</div><div class="mdl-tabs__panel " id="mxnet-9-1"><p><a class="reference external" href="https://discuss.d2l.ai/t/352">Discussions</a></p>
+</div><div class="mdl-tabs__panel " id="tensorflow-9-2"><p><a class="reference external" href="https://discuss.d2l.ai/t/1067">Discussions</a></p>
+</div></div></div>
+</div>
+
+
+        </div>
+        <div class="side-doc-outline">
+            <div class="side-doc-outline--content"> 
+<div class="localtoc">
+    <p class="caption">
+      <span class="caption-text">Table Of Contents</span>
+    </p>
+    <ul>
+<li><a class="reference internal" href="#">12.4. Stochastic Gradient Descent</a><ul>
+<li><a class="reference internal" href="#stochastic-gradient-updates">12.4.1. Stochastic Gradient Updates</a></li>
+<li><a class="reference internal" href="#dynamic-learning-rate">12.4.2. Dynamic Learning Rate</a></li>
+<li><a class="reference internal" href="#convergence-analysis-for-convex-objectives">12.4.3. Convergence Analysis for Convex Objectives</a></li>
+<li><a class="reference internal" href="#stochastic-gradients-and-finite-samples">12.4.4. Stochastic Gradients and Finite Samples</a></li>
+<li><a class="reference internal" href="#summary">12.4.5. Summary</a></li>
+<li><a class="reference internal" href="#exercises">12.4.6. Exercises</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+            </div>
+        </div>
+
+      <div class="clearer"></div>
+    </div><div class="pagenation">
+     <a id="button-prev" href="gd.html" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored" role="botton" accesskey="P">
+         <i class="pagenation-arrow-L fas fa-arrow-left fa-lg"></i>
+         <div class="pagenation-text">
+            <span class="pagenation-direction">Previous</span>
+            <div>12.3. Gradient Descent</div>
+         </div>
+     </a>
+     <a id="button-next" href="minibatch-sgd.html" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored" role="botton" accesskey="N">
+         <i class="pagenation-arrow-R fas fa-arrow-right fa-lg"></i>
+        <div class="pagenation-text">
+            <span class="pagenation-direction">Next</span>
+            <div>12.5. Minibatch Stochastic Gradient Descent</div>
+        </div>
+     </a>
+  </div>
+        
+        </main>
+    </div>
+  </body>
+</html>
